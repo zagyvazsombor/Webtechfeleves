@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taxi Playground - Autó létrehozása</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h4>Új autó létrehozása</h4>
+    <form id="create-car-form">
+        <label for="brand">Márka:</label>
+        <select id="brand" required>
+            <option value="Toyota">Toyota</option>
+            <option value="Honda">Honda</option>
+            <option value="Ford">Ford</option>
+            <option value="Chevrolet">Chevrolet</option>
+            <option value="Nissan">Nissan</option>
+            <option value="BMW">BMW</option>
+            <option value="Mercedes-Benz">Mercedes-Benz</option>
+            <option value="Volkswagen">Volkswagen</option>
+            <option value="Audi">Audi</option>
+            <option value="Hyundai">Hyundai</option>
+            <option value="Kia">Kia</option>
+            <option value="Subaru">Subaru</option>
+            <option value="Lexus">Lexus</option>
+            <option value="Mazda">Mazda</option>
+            <option value="Tesla">Tesla</option>
+            <option value="Jeep">Jeep</option>
+            <option value="Porsche">Porsche</option>
+            <option value="Volvo">Volvo</option>
+            <option value="Jaguar">Jaguar</option>
+            <option value="Land Rover">Land Rover</option>
+            <option value="Mitsubishi">Mitsubishi</option>
+            <option value="Ferrari">Ferrari</option>
+            <option value="Lamborghini">Lamborghini</option>
+        </select>
+
+        <label for="model">Modell:</label>
+        <input type="text" id="model" required>
+
+        <label for="fuelUse">Üzemanyag használat:</label>
+        <input type="number" id="fuelUse" required>
+
+        <label for="owner">Tulajdonos:</label>
+        <input type="text" id="owner" required>
+
+        <label for="dayOfCommission">Forgalomba helyezésének napja:</label>
+        <input type="date" id="dayOfCommission" required>
+
+        <label for="electric">
+            <input type="checkbox" id="electric"> Elektromos
+        </label>
+    </form>
+    
+    <button id="submit-button" class="btn btn-primary">létrehozás</button>
+    <p id="message" style="color: green; font-weight: bold;"></p>
+
+    <script src="app.js"></script>
+    <script>
+        async function createCar(newCar){
+            try{
+                const res=await fetch(`https://iit-playground.arondev.hu/api/${NEPTUN_CODE}/car`,{
+                    method:'POST',
+                    body:JSON.stringify(newCar)
+                });
+
+                if(!res.ok){
+                    const error=await res.json();
+                    alert(error.message);
+                    return;
+                }
+
+            document.getElementById('message').textContent = "Az autó sikeresen létrehozva!";
+            document.getElementById('create-car-form').reset();
+            }catch(err){
+                alert('Váratlan hiba történt a szerverrel.');
+                console.error(err);
+            }
+        }
+
+        const createBtn=document.querySelector('#submit-button');
+
+        createBtn.addEventListener('click', function() {
+        const brand = document.getElementById('brand').value;
+        const model = document.getElementById('model').value;
+        const fuelUse = document.getElementById('fuelUse').value;
+        const owner = document.getElementById('owner').value;
+        const dayOfCommission = document.getElementById('dayOfCommission').value;
+        const electric = document.getElementById('electric').checked;
+
+        const newCar = {
+            brand: brand,
+            model: model,
+            fuelUse: fuelUse,
+            owner: owner,
+            dayOfCommission: dayOfCommission,
+            electric: electric
+            };
+
+        createCar(newCar);
+        });
+     
+    </script>
+</body>
+</html>

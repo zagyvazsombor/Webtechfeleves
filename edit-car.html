@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taxi Playground - Autó szerkesztés</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div>
+    <h4>Autó szerkesztése</h4>
+    <p>Autó ID: <span id="car-id"></span></p>
+    <form id="edit-car-form">
+        <label for="brand">Márka:</label>
+        <select id="brand" required>
+            <option value="Toyota">Toyota</option>
+            <option value="Honda">Honda</option>
+            <option value="Ford">Ford</option>
+            <option value="Chevrolet">Chevrolet</option>
+            <option value="Nissan">Nissan</option>
+            <option value="BMW">BMW</option>
+            <option value="Mercedes-Benz">Mercedes-Benz</option>
+            <option value="Volkswagen">Volkswagen</option>
+            <option value="Audi">Audi</option>
+            <option value="Hyundai">Hyundai</option>
+            <option value="Kia">Kia</option>
+            <option value="Subaru">Subaru</option>
+            <option value="Lexus">Lexus</option>
+            <option value="Mazda">Mazda</option>
+            <option value="Tesla">Tesla</option>
+            <option value="Jeep">Jeep</option>
+            <option value="Porsche">Porsche</option>
+            <option value="Volvo">Volvo</option>
+            <option value="Jaguar">Jaguar</option>
+            <option value="Land Rover">Land Rover</option>
+            <option value="Mitsubishi">Mitsubishi</option>
+            <option value="Ferrari">Ferrari</option>
+            <option value="Lamborghini">Lamborghini</option>
+        </select>
+
+        <label for="model">Modell:</label>
+        <input type="text" id="model" required>
+
+        <label for="fuelUse">Üzemanyag használat:</label>
+        <input type="number" id="fuelUse" required>
+
+        <label for="owner">Tulajdonos:</label>
+        <input type="text" id="owner" required>
+
+        <label for="dayOfCommission">Forgalomba helyezésének napja:</label>
+        <input type="date" id="dayOfCommission" required>
+
+        <label for="electric">
+            <input type="checkbox" id="electric"> Elektromos
+        </label>
+    </form>
+    </div>
+    <button id="update-button" class="btn btn-primary">Frissítés</button>
+
+    <script src="app.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const carId = urlParams.get('carId');
+
+        async function loadCar() {
+            try {
+                const res = await fetch(`https://iit-playground.arondev.hu/api/${NEPTUN_CODE}/car/${carId}`);
+                if (!res.ok) {
+                    const error = await res.json();
+                    alert(error.message);
+                    return;
+                }
+                const car = await res.json();
+                document.getElementById('car-id').textContent = car.id;
+                document.getElementById('brand').value = car.brand;
+                document.getElementById('model').value = car.model;
+                document.getElementById('fuelUse').value = car.fuelUse;
+                document.getElementById('owner').value = car.owner;
+                document.getElementById('dayOfCommission').value = car.dayOfCommission;
+                document.getElementById('electric').checked = car.electric;
+            } catch (err) {
+                alert('Hiba történt az autó adatainak lekérésekor.');
+                console.error(err);
+            }
+        }
+
+        async function editCar(carId, updatedCar) {
+            console.log(updatedCar)
+            try {
+                const res = await fetch(`https://iit-playground.arondev.hu/api/${NEPTUN_CODE}/car`, {
+                    method: 'PUT',
+                    body: JSON.stringify(updatedCar)
+                });
+
+                if (!res.ok) {
+                    const text = await res.text();
+                    alert(`Hiba: ${res.status} - ${text}`);
+                    return;
+                }
+
+                window.location.href = `cars.html?updatedId=${carId}`;
+
+            } catch (err) {
+                alert('Váratlan hiba történt a szerverrel.');
+                console.error(err);
+            }
+        }
+
+        document.querySelector('#update-button').addEventListener('click', () => {
+            const brand = document.getElementById('brand').value;
+            const model = document.getElementById('model').value;
+            const fuelUse = document.getElementById('fuelUse').value;
+            const owner = document.getElementById('owner').value;
+            const dayOfCommission = document.getElementById('dayOfCommission').value;
+            const electric = document.getElementById('electric').checked;
+
+            const updatedCar = {
+                id: Number(carId),
+                brand: brand,
+                model: model,
+                fuelUse: fuelUse,
+                owner: owner,
+                dayOfCommission: dayOfCommission,
+                electric: electric
+            };
+            editCar(carId, updatedCar);
+        });
+
+        loadCar();
+    </script>
+</body>
+</html>

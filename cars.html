@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taxi Playground - Autók listája</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h4>Taxi keresése</h4>
+
+    <label for="car-id">Autó ID:</label>
+    <input type="text" id="car-id" placeholder="0, 1, 2, ...">
+    <br>
+    <button id="search-button" class="btn btn-primary">Keresés</button>
+
+    <div id="results" class="card-container"></div>
+
+    <script src="app.js"></script>
+    <script>
+        const searchButton = document.querySelector('#search-button');
+        const resultsDiv = document.querySelector('#results');
+
+        searchButton.addEventListener('click', () => {
+            const carId = document.querySelector('#car-id').value;
+            listCar(carId);
+        });
+
+        async function listCar(carId) {
+            let url = `https://iit-playground.arondev.hu/api/${NEPTUN_CODE}/car`;
+            if (carId) {
+                url += `/${carId}`;
+            }
+            try {
+                const res = await fetch(url);
+
+                if (!res.ok) {
+                    const error = await res.json();
+                    alert(error.message);
+                    return;
+                }
+
+                const data = await res.json();
+                resultsDiv.innerHTML = '';
+
+            if (carId) {
+                resultsDiv.innerHTML = renderCarCard(data);
+            } else {
+                data.forEach(car => {
+                resultsDiv.innerHTML += renderCarCard(car);
+            }
+            );}
+            } catch (err) {
+                alert('Váratlan hiba történt a szerverrel.');
+                console.error(err);
+            }
+        }
+
+        async function deleteCar(carId) { 
+            try {
+            const res = await fetch(`https://iit-playground.arondev.hu/api/${NEPTUN_CODE}/car/${carId}`, {
+                method: 'DELETE'
+            });
+
+            if (!res.ok) {
+                    const error = await res.json();
+                    alert(error.message);
+                    return;
+                }
+
+            listCar("");
+
+            } catch (err) {
+                alert('Váratlan hiba történt a szerverrel.');
+                console.error(err);
+            }
+        }
+
+        function renderCarCard(car) {
+            return `
+                <div class="card">
+                    <p><strong>ID:</strong> ${car.id}</p>
+                    <p><strong>Márka:</strong> ${car.brand}</p>
+                    <p><strong>Model:</strong> ${car.model}</p>
+                    <p><strong>Fogyasztás:</strong> ${car.fuelUse}</p>
+                    <p><strong>Tulajdonos:</strong> ${car.owner}</p>
+                    <p><strong>Forgalomba helyezés:</strong> ${car.dayOfCommission}</p>
+                    <p><strong>Elektromos:</strong> ${car.electric ? '✅' : '❌'}</p>
+                    <button onclick="deleteCar(${car.id})" class="btn btn-danger">Törlés</button>
+                    <button onclick="editCar(${car.id})" class="btn btn-warning">Szerkesztés</button>
+                </div>
+            `;
+        }
+
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const updatedId = urlParams.get("updatedId");
+
+            if (updatedId) {
+                listCar(updatedId);
+            }
+
+        function editCar(carId) {
+            window.location.href = `edit-car.html?carId=${carId}`;
+        }
+    </script>
+</body>
+</html>
