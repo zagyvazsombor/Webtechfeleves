@@ -146,3 +146,22 @@ label[for="car-id"] {
     color: white;
 }
 
+.neptun-btn {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    background-color: #b39750;
+    color: white;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.neptun-btn:hover {
+    background-color: #a0803e;
+}
+

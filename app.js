@@ -4,7 +4,15 @@ if (!neptun) {
     sessionStorage.setItem('neptun', neptun);
 }
 
-const NEPTUN_CODE = neptun;
+function resetNeptun() {
+    let newCode = prompt('Add meg az új Neptun kódot:');
+    if (newCode) {
+        sessionStorage.setItem('neptun', newCode);
+        location.reload(); // frissítés, hogy az új kód érvénybe lépjen
+    }
+}
+
+let NEPTUN_CODE = neptun;
 
 function loadNavigation() {
     fetch('nav.html')
